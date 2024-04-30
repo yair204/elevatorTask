@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Loader</title>
+    <script src="elevator.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+       
+
+    </style>
+</head>
+<body>
+    <label for="numDivs">Number of floors:</label>
+    <input type="number" id="numDivs" min="1">
+    <button onclick="createFloors()">Add floors</button>
+
+    <div class="container">
+        <div id="floors" onclick="handleBackgroundClick(event)">
+        </div>
+        <div id="elevators">
+
+        </div>
+    </div>
+    <script >
+        const building = new Building(3); 
+        const elevatorPositions = document.getElementById("numDivs").value;
+        function createElevators(numElevators) {
+            const elevatorsContainer = document.getElementById("elevators");
+            elevatorsContainer.innerHTML = ""; // Clear previous content
+
+            for (let i = 0; i < numElevators; i++) {
+                const elevatorImg = document.createElement("img");
+                elevatorImg.classList.add("elevatorsStyle");
+                elevatorImg.src = "elv.png"; // Set the source of the elevator image
+                elevatorImg.alt = "Elevator"; // Set alternative text for accessibility
+                elevatorImg.style.bottom = elevatorPositions + "px"; // Set the top position
+                
+                elevatorsContainer.appendChild(elevatorImg); // Append the elevator image to the container
+            }
+        }
+
+        createElevators(3); // Create elevator images based on the initial number of elevators in the building
+
+        function createFloors() {
+            let num = document.getElementById("numDivs").value;
+            const floors = document.getElementById("floors");
+            floors.innerHTML = ""; // Clear previous content
+            let floorsIndex = {}
+            for (let i = 15 + Number(num); i >= 1; i--) {
+                const floorDiv = document.createElement("div");
+                floorDiv.classList.add("floor");
+
+                const metalDiv = document.createElement("button");
+                metalDiv.classList.add("metal", "linear");
+                metalDiv.textContent = i;
+                floorsIndex[i] = i;
+                metalDiv.onclick = function() {
+                    console.log(i)
+                    building.callElevator(floorsIndex[i]);
+                };
+
+
+
+                // Add event listener to change background color of the number
+                metalDiv.addEventListener("click", function(event) {
+                    // Remove green-background class from all .metal elements
+                    var allMetalDivs = document.querySelectorAll('.metal');
+                    allMetalDivs.forEach(function(div) {
+                        div.classList.remove('green-background');
+                    });
+                    // Add green-background class to the clicked .metal element
+                    event.target.classList.add('green-background');
+                    event.stopPropagation(); // Prevent click event from bubbling up
+                });
+
+                floorDiv.appendChild(metalDiv);
+                floors.appendChild(floorDiv);
+            }
+        }
+
+        createFloors()
+
+        function handleBackgroundClick(event) {
+            // Check if the clicked element is not a .metal element
+            if (!event.target.classList.contains('metal')) {
+                // Remove green-background class from all .metal elements
+                var allMetalDivs = document.querySelectorAll('.metal');
+                allMetalDivs.forEach(function(div) {
+                    div.classList.remove('green-background');
+                });
+            }
+        }
+  
+        function moveElement(newPosition) {
+            var newPosition = window.innerHeight - element.offsetHeight;
+            element.style.bottom = newPosition + "px";
+        }
+  
+    </script>
+</body>
+</html>
