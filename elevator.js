@@ -5,19 +5,27 @@ var Elevator = /** @class */ (function () {
         this.direction = "stationary"; // Initial direction is stationary
         this.destinationQueue = []; // Queue to store destination floors
     }
+    Object.defineProperty(Elevator.prototype, "getCurrentFloor", {
+        // Getter method to retrieve the current floor
+        get: function () {
+            return this.currentFloor;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Elevator.prototype.move = function (destinationFloor) {
         // Update direction based on the destination floor
         if (destinationFloor > this.currentFloor) {
             this.direction = "up";
+            // setTimeout(() => { this.direction = "stationary"}, 2000);
         }
         else if (destinationFloor < this.currentFloor) {
             this.direction = "down";
+            // setTimeout(() => { this.direction = "stationary"}, 2000);
         }
         else {
             this.direction = "stationary";
         }
-        // Move the elevator to the destination floor
-        // (Implementation not provided, depends on simulation environment)
         // Update current floor
         this.currentFloor = destinationFloor;
     };
@@ -37,10 +45,28 @@ var Elevator = /** @class */ (function () {
 }());
 var Building = /** @class */ (function () {
     function Building(numElevators) {
-        this.elevators = Array.from({ length: numElevators }, function (_, i) { return new Elevator(i); });
+        this.idsList = Array.from({ length: numElevators }, function () { return Math.floor(Math.random() * (100 - 1 + 1)) + 1; });
+        this.elevators = this.idsList.map(function (id) { return new Elevator(id); });
     }
+    Object.defineProperty(Building.prototype, "numberOfElevators", {
+        get: function () {
+            return this.elevators.length;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Building.prototype, "elevatorsIdsList", {
+        get: function () {
+            return this.idsList;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Building.prototype.getElevatorById = function (elevatorId) {
+        var elevator = this.elevators.find(function (elevator) { return elevator.id === elevatorId; });
+        return elevator ? elevator : null;
+    };
     Building.prototype.callElevator = function (floor) {
-        console.log(floor);
         // Determine the best elevator to handle the request
         var bestElevator = null;
         var minDistance = Infinity;
@@ -54,17 +80,20 @@ var Building = /** @class */ (function () {
                 }
             }
         }
-        // Add floor request to the selected elevator's queue
         if (bestElevator) {
             bestElevator.handleRequest(floor);
+            return bestElevator.id;
         }
         else {
             console.log("No available elevators.");
+            return 0;
         }
     };
-    Building.prototype.pressButton = function (floor, direction) {
-        // Add floor request to the closest elevator going in the specified direction
-        // (Implementation not provided, depends on building layout and elevator positions)
+    Building.prototype.releaseElevator = function (elevatorId) {
+        var elevator = this.getElevatorById(elevatorId);
+        if (elevator) {
+            elevator.direction = "stationary";
+        }
     };
     return Building;
 }());

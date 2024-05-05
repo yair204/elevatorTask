@@ -1,104 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Image Loader</title>
     <script src="elevator.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <script src="config.js"></script>
+    <link rel="stylesheet" href="style.css" />
 
-    <style>
-       
-
-    </style>
-</head>
-<body>
-    <label for="numDivs">Number of floors:</label>
-    <input type="number" id="numDivs" min="1">
-    <button onclick="createFloors()">Add floors</button>
+    <style></style>
+  </head>
+  <body>
 
     <div class="container">
-        <div id="floors" onclick="handleBackgroundClick(event)">
-        </div>
-        <div id="elevators">
+      <div id="floors" onclick="handleBackgroundClick(event)"></div>
 
-        </div>
+      <div id="elevators"></div>
     </div>
-    <script >
-        const building = new Building(3); 
-        const elevatorPositions = document.getElementById("numDivs").value;
-        function createElevators(numElevators) {
-            const elevatorsContainer = document.getElementById("elevators");
-            elevatorsContainer.innerHTML = ""; // Clear previous content
+    <script>
+      const NUM_OF_ELEVATORS = setting.NUM_OF_ELEVATORS;
 
-            for (let i = 0; i < numElevators; i++) {
-                const elevatorImg = document.createElement("img");
-                elevatorImg.classList.add("elevatorsStyle");
-                elevatorImg.src = "elv.png"; // Set the source of the elevator image
-                elevatorImg.alt = "Elevator"; // Set alternative text for accessibility
-                elevatorImg.style.bottom = elevatorPositions + "px"; // Set the top position
+      const building = new Building(NUM_OF_ELEVATORS); // Creating a building with 3 elevators
+      
+      
+      const elevatorsContainer = document.getElementById("elevators");
+      // Loop to create elevator images
+      for (let i = 0; i < building.numberOfElevators; i++) {
+        const elevatorId = building.elevatorsIdsList[i]; // Get the elevator ID
+        const elevatorsImg = document.createElement("img"); // Create a new elevator image element
+        elevatorsImg.classList.add("elevatorsStyle"); // Add CSS class for styling
+        elevatorsImg.src = "elv.png"; 
+        elevatorsImg.alt = "Elevator";
+        elevatorsImg.id = elevatorId; 
+        elevatorsContainer.appendChild(elevatorsImg); 
+      }
+
+      function moveElevator(elevatorId) {
+        const elevatorImg = document.getElementById(elevatorId);
+        const elevatorInst = building.getElevatorById(elevatorId);
+        elevatorImg.style.marginBottom =
+        (elevatorInst.getCurrentFloor-1) * setting.HEIGHT + (elevatorInst.getCurrentFloor * 7) + "px";
+        elevatorImg.style.setProperty('--transition-duration', (elevatorInst.getCurrentFloor * 0.5) + 's');
+        
+        // return Promise.resolve();
+
+        //  setTimeout(()=> { building.releaseElevator(elevatorId),console.log("test")},7000)
+      }
+
+      function createFloors() {
+        const floors = document.getElementById("floors");
+        floors.innerHTML = ""; // Clear previous content
+        let floorsIndex = {};
+        for (let i = setting.NUM_OF_FLOORS; i >= 1; i--) {
+          const floorDiv = document.createElement("div");
+          floorDiv.classList.add("floor");
+          floorDiv.style.height = setting.HEIGHT + 'px';
+
+          const metalDiv = document.createElement("button");
+          metalDiv.classList.add("metal" ,"linear");
+          metalDiv.textContent = i;
+          metalDiv.id = i;
+          floorsIndex[i] = i;
+          metalDiv.onclick = function () {
+              const currentElevatorId = building.callElevator(floorsIndex[i]);
+              moveElevator(currentElevatorId);
+              handleBackgroundClick(floorsIndex[i]);
+            
+
+              
+          };   
                 
-                elevatorsContainer.appendChild(elevatorImg); // Append the elevator image to the container
-            }
+
+          floorDiv.appendChild(metalDiv);
+          floors.appendChild(floorDiv);
         }
+        return Promise.resolve();
+      }
 
-        createElevators(3); // Create elevator images based on the initial number of elevators in the building
+    createFloors()
+    .then(() => {
+        // After moveElevator completes execution, set the timeout
+        setTimeout(() => {
+            building.releaseElevator(elevatorId);
+            console.log("test");
+        }, 7000);
+    });
 
-        function createFloors() {
-            let num = document.getElementById("numDivs").value;
-            const floors = document.getElementById("floors");
-            floors.innerHTML = ""; // Clear previous content
-            let floorsIndex = {}
-            for (let i = 15 + Number(num); i >= 1; i--) {
-                const floorDiv = document.createElement("div");
-                floorDiv.classList.add("floor");
-
-                const metalDiv = document.createElement("button");
-                metalDiv.classList.add("metal", "linear");
-                metalDiv.textContent = i;
-                floorsIndex[i] = i;
-                metalDiv.onclick = function() {
-                    console.log(i)
-                    building.callElevator(floorsIndex[i]);
-                };
+      function handleBackgroundClick(metalId) {
+        const metal = document.getElementById(metalId);
+        metal.classList.remove("linear");
+        metal.classList.add("linearGreenBackground");
+        
+        setTimeout(function() {
+            const audio = new Audio('ding.mp3');
+            audio.play();
+            metal.classList.remove("linearGreenBackground");
+            metal.classList.add("linear");
+        }, metalId * 500); 
+    }
 
 
+      function isElevatorArrived(elevatorId, destinationFloor) {
+        const elevatorInst = building.getElevatorById(elevatorId);
+        const elevatorCurrentPosition = (elevatorInst.getCurrentFloor - 1) * setting.HEIGHT + (elevatorInst.getCurrentFloor * 7); // Current position of the elevator
 
-                // Add event listener to change background color of the number
-                metalDiv.addEventListener("click", function(event) {
-                    // Remove green-background class from all .metal elements
-                    var allMetalDivs = document.querySelectorAll('.metal');
-                    allMetalDivs.forEach(function(div) {
-                        div.classList.remove('green-background');
-                    });
-                    // Add green-background class to the clicked .metal element
-                    event.target.classList.add('green-background');
-                    event.stopPropagation(); // Prevent click event from bubbling up
-                });
+        const destinationFloorPosition = (destinationFloor - 1) * setting.HEIGHT; // Position of the destination floor
 
-                floorDiv.appendChild(metalDiv);
-                floors.appendChild(floorDiv);
-            }
-        }
+        // Check if the absolute difference between the current position and destination position is less than a threshold (e.g., 5 pixels)
+        const threshold = 8; 
+        console.log(elevatorCurrentPosition , destinationFloorPosition ,elevatorId, destinationFloor)
+        const isArrived = Math.abs(elevatorCurrentPosition - destinationFloorPosition) < threshold;
 
-        createFloors()
+        return isArrived;
+    }
 
-        function handleBackgroundClick(event) {
-            // Check if the clicked element is not a .metal element
-            if (!event.target.classList.contains('metal')) {
-                // Remove green-background class from all .metal elements
-                var allMetalDivs = document.querySelectorAll('.metal');
-                allMetalDivs.forEach(function(div) {
-                    div.classList.remove('green-background');
-                });
-            }
-        }
-  
-        function moveElement(newPosition) {
-            var newPosition = window.innerHeight - element.offsetHeight;
-            element.style.bottom = newPosition + "px";
-        }
-  
+
+     
     </script>
-</body>
+  </body>
 </html>

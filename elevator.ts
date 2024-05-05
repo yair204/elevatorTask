@@ -11,21 +11,26 @@ class Elevator {
         this.destinationQueue = []; // Queue to store destination floors
     }
 
+    // Getter method to retrieve the current floor
+    get getCurrentFloor() {
+        return this.currentFloor;
+    }
+
     move(destinationFloor: number): void {
         // Update direction based on the destination floor
         if (destinationFloor > this.currentFloor) {
             this.direction = "up";
+            // setTimeout(() => { this.direction = "stationary"}, 2000);
         } else if (destinationFloor < this.currentFloor) {
             this.direction = "down";
+            // setTimeout(() => { this.direction = "stationary"}, 2000);
         } else {
             this.direction = "stationary";
         }
-        
-        // Move the elevator to the destination floor
-        // (Implementation not provided, depends on simulation environment)
 
         // Update current floor
         this.currentFloor = destinationFloor;
+        
     }
 
     addToQueue(floor: number): void {
@@ -46,13 +51,27 @@ class Elevator {
 
 class Building {
     elevators: Elevator[];
+    idsList:number[];
 
     constructor(numElevators: number) {
-        this.elevators = Array.from({ length: numElevators }, (_, i) => new Elevator(i));
+        this.idsList = Array.from({ length: numElevators }, () => Math.floor(Math.random() * (100 - 1 + 1)) + 1);
+        this.elevators = this.idsList.map(id => new Elevator(id));
     }
 
-    callElevator(floor: number): void {
-        console.log(floor)
+    get numberOfElevators(): number {
+        return this.elevators.length;
+    }
+
+    get elevatorsIdsList(): Array<number>{
+        return this.idsList;
+    }
+
+    getElevatorById(elevatorId: number): Elevator | null {
+        const elevator = this.elevators.find(elevator => elevator.id === elevatorId);
+        return elevator ? elevator : null;
+    }
+
+    callElevator(floor: number): number {
         // Determine the best elevator to handle the request
         let bestElevator: Elevator | null = null;
         let minDistance = Infinity;
@@ -67,18 +86,28 @@ class Building {
             }
         }
 
-        // Add floor request to the selected elevator's queue
         if (bestElevator) {
             bestElevator.handleRequest(floor);
+            return bestElevator.id;
         } else {
             console.log("No available elevators.");
+            
+            return 0;
         }
+
+        
     }
 
-    pressButton(floor: number, direction: string): void {
-        // Add floor request to the closest elevator going in the specified direction
-        // (Implementation not provided, depends on building layout and elevator positions)
+    releaseElevator(elevatorId: number): void{
+        const elevator = this.getElevatorById(elevatorId);
+        if(elevator){
+            elevator.direction = "stationary";
+        }
+        
     }
+
+   
 }
+
 
 

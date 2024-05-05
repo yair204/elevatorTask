@@ -1,3 +1,4 @@
+
 .container {
     display: flex;
     flex-direction: row;
@@ -29,9 +30,13 @@
     background-size: 58px 58px;
     background-position: 0px 2px, 4px 35px, 29px 31px, 34px 6px;
     position: relative;
-    margin: 5px auto;
-    width: 100px; /* Adjust width as needed */
-    height: 50px; /* Adjust height as needed */
+    /* margin: 5px; */
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    width: 160px; 
+    border-bottom: 7px solid black
+    
 }
 
 .metal {
@@ -53,24 +58,20 @@
         }
 
 
-/* Add green background color on click */
-.metal.green-background {
-    background-color: green !important;
-    cursor: pointer;
-}
-
 .elevatorsStyle {
-    width: 70px;
-    height: 70px;
+    width: 80px;
+    height: 80px;
     margin: 0 10px; /* Add margin between elevator images */
     /* bottom: 50px; */
     position: relative;
-            
-    
+    margin-bottom: 0px;
+    transition: margin-bottom var(--transition-duration, 0s); 
+  
 }
+
 .metal.linear {
 width:auto;
-font-size: 2em;
+font-size: 3em;
 height: auto;
 border-radius: .5em;
 background-image: -webkit-repeating-linear-gradient(left, hsla(0,0%,100%,0) 0%, hsla(0,0%,100%,0) 6%, hsla(0,0%,100%, .1) 7.5%), 
@@ -78,3 +79,12 @@ background-image: -webkit-repeating-linear-gradient(left, hsla(0,0%,100%,0) 0%, 
                     -webkit-repeating-linear-gradient(left, hsla(0,0%,100%,0) 0%, hsla(0,0%,100%,0) 1.2%, hsla(0,0%,100%,.15) 2.2%), 
                     linear-gradient(180deg, hsl(0,0%,78%) 0%, hsl(0,0%,90%) 47%, hsl(0,0%,78%) 53%, hsl(0,0%,70%)100%);
 }
+
+.metal.linearGreenBackground {
+    width:auto;
+    font-size: 3em;
+    height: auto;
+    border-radius: .5em;
+    background-color: green ;
+    }
+
