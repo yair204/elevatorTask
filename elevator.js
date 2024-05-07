@@ -35,9 +35,7 @@ var Elevator = /** @class */ (function () {
         // Update current floor
         this.lastFloor = this.currentFloor;
         this.currentFloor = destinationFloor;
-        console.log("🚀 ~ Elevator ~ move ~ currentFloor:", this.currentFloor);
         this.destinationQueue.shift();
-        console.log("🚀 ~ Elevator ~ move ~ lastFloor:", this.lastFloor);
     };
     Elevator.prototype.addToQueue = function (floor) {
         // Add a floor to the destination queue
@@ -115,4 +113,35 @@ var Building = /** @class */ (function () {
         });
     };
     return Building;
+}());
+var BuildingMaster = /** @class */ (function () {
+    function BuildingMaster(numBuildings, numElevatorsPerBuilding) {
+        this.buildings = Array.from({ length: numBuildings }, function () { return new Building(numElevatorsPerBuilding); });
+    }
+    Object.defineProperty(BuildingMaster.prototype, "numberOfBuildings", {
+        get: function () {
+            return this.buildings.length;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    BuildingMaster.prototype.callElevator = function (buildingIndex, floor) {
+        if (buildingIndex >= 0 && buildingIndex < this.buildings.length) {
+            return this.buildings[buildingIndex].callElevator(floor);
+        }
+        else {
+            console.log("Building index out of range.");
+            return 0;
+        }
+    };
+    BuildingMaster.prototype.releaseElevator = function (buildingIndex, elevatorId) {
+        if (buildingIndex >= 0 && buildingIndex < this.buildings.length) {
+            return this.buildings[buildingIndex].releaseElevator(elevatorId);
+        }
+        else {
+            console.log("Building index out of range.");
+            return Promise.reject("Building index out of range.");
+        }
+    };
+    return BuildingMaster;
 }());

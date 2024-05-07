@@ -151,6 +151,3 @@ class BuildingMaster {
     }
 }
 
-const master = new BuildingMaster(2, 3); // Creating a master with 2 buildings, each having 3 elevators
-master.callElevator(0, 5);                  // Call elevator in the first building to the 5th floor
-master.releaseElevator(1, 2);               // Release elevator in the second building with ID 2
