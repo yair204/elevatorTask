@@ -1,8 +1,9 @@
-.container {
+.mainContainer {
     display: flex;
-    flex-direction: row;
+    flex-direction: row-reverse;
     /* align-items: center; */
-    justify-content: center;
+    justify-content: flex-end;
+    
 
 }
 
@@ -20,7 +21,7 @@
 
 }
 
-#elevators {
+.elevators {
     display: flex;
     justify-content: center;
     align-items: flex-end;
