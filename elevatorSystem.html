@@ -11,40 +11,59 @@
     <style></style>
   </head>
   <body>
+    <div id="noElevators"></div>
 
     <div class="container">
-      <div id="floors" onclick="handleBackgroundClick(event)"></div>
-
-      <div id="elevators"></div>
+        <!-- <div class="counterContainer" ></div> -->
+        <div id="floors"></div>
+        <div id="elevators"></div>
     </div>
     <script>
       const NUM_OF_ELEVATORS = setting.NUM_OF_ELEVATORS;
 
-      const building = new Building(NUM_OF_ELEVATORS); // Creating a building with 3 elevators
-      
-      
+      // const building = new Building(NUM_OF_ELEVATORS); // Creating a building with 3 elevators
+      const master = new BuildingMaster(2, 3); // Creating a master with 2 buildings, each having 3 elevators
+      master.callElevator(0, 5);                  // Call elevator in the first building to the 5th floor
+      master.releaseElevator(1, 2); 
+      const building = master.buildings[0];
+
       const elevatorsContainer = document.getElementById("elevators");
       // Loop to create elevator images
       for (let i = 0; i < building.numberOfElevators; i++) {
         const elevatorId = building.elevatorsIdsList[i]; // Get the elevator ID
         const elevatorsImg = document.createElement("img"); // Create a new elevator image element
         elevatorsImg.classList.add("elevatorsStyle"); // Add CSS class for styling
-        elevatorsImg.src = "elv.png"; 
+        elevatorsImg.src = "elv.png";
         elevatorsImg.alt = "Elevator";
-        elevatorsImg.id = elevatorId; 
-        elevatorsContainer.appendChild(elevatorsImg); 
+        elevatorsImg.id = elevatorId;
+        elevatorsContainer.appendChild(elevatorsImg);
       }
 
       function moveElevator(elevatorId) {
         const elevatorImg = document.getElementById(elevatorId);
-        const elevatorInst = building.getElevatorById(elevatorId);
-        elevatorImg.style.marginBottom =
-        (elevatorInst.getCurrentFloor-1) * setting.HEIGHT + (elevatorInst.getCurrentFloor * 7) + "px";
-        elevatorImg.style.setProperty('--transition-duration', (elevatorInst.getCurrentFloor * 0.5) + 's');
-        
-        // return Promise.resolve();
+        const elevatorInst = building.getElevatorById(elevatorId); 
+        const newPosition =  (elevatorInst.getCurrentFloor - 1) * setting.HEIGHT +
+          elevatorInst.getCurrentFloor * 7 +
+          "px";   
+        elevatorImg.style.marginBottom = newPosition;
+         
+        // startTimer(elevatorInst.getCurrentFloor - elevatorInst.getLastFloor,newPosition); 
+        elevatorImg.style.setProperty(
+          "--transition-duration",
+          Math.abs(elevatorInst.getCurrentFloor - elevatorInst.getLastFloor) *
+            0.5 +
+            "s"
+        );
 
-        //  setTimeout(()=> { building.releaseElevator(elevatorId),console.log("test")},7000)
+        // Call releaseElevator asynchronously without waiting for it to finish
+        building
+          .releaseElevator(elevatorId)
+          .then(() => {
+            console.log("Elevator released after 2 seconds");
+          })
+          .catch((error) => {
+            console.error("Error in releasing elevator:", error);
+          });
       }
 
       function createFloors() {
@@ -52,70 +71,108 @@
         floors.innerHTML = ""; // Clear previous content
         let floorsIndex = {};
         for (let i = setting.NUM_OF_FLOORS; i >= 1; i--) {
-          const floorDiv = document.createElement("div");
-          floorDiv.classList.add("floor");
-          floorDiv.style.height = setting.HEIGHT + 'px';
+          
+          const counterAndFloors = document.createElement("div");
+          counterAndFloors.classList.add("counterAndFloors");
+
+          
+          const counterContainer = document.createElement('div');
+          counterContainer.classList.add("counterContainer");
+          
+          const counter = document.createElement('p');
+          counter.classList.add('counterStyle');
+          
+          const floorContainer = document.createElement("div");
+          floorContainer.classList.add("floor");
+          floorContainer.style.height = setting.HEIGHT + "px";
 
           const metalDiv = document.createElement("button");
-          metalDiv.classList.add("metal" ,"linear");
+          metalDiv.classList.add("metal", "linear");
+
           metalDiv.textContent = i;
           metalDiv.id = i;
           floorsIndex[i] = i;
           metalDiv.onclick = function () {
-              const currentElevatorId = building.callElevator(floorsIndex[i]);
+            const currentElevatorId = building.callElevator(floorsIndex[i]);
+            const elevatorInst = building.getElevatorById(currentElevatorId); 
+            startTimer(elevatorInst.getCurrentFloor - elevatorInst.getLastFloor,counter);
+            if (currentElevatorId) {
+              document.getElementById("noElevators").innerText = "";
               moveElevator(currentElevatorId);
-              handleBackgroundClick(floorsIndex[i]);
-            
+              handleBackgroundClick(floorsIndex[i], currentElevatorId);
+            } else {
+              document.getElementById("noElevators").innerText =
+                "No elevator available";
+            }
+          };
 
-              
-          };   
-                
-
-          floorDiv.appendChild(metalDiv);
-          floors.appendChild(floorDiv);
+          floorContainer.appendChild(metalDiv);
+          counterContainer.appendChild(counter); 
+          counterAndFloors.appendChild(floorContainer);
+          counterAndFloors.appendChild(counterContainer);
+          floors.appendChild(counterAndFloors); 
         }
-        return Promise.resolve();
       }
 
-    createFloors()
-    .then(() => {
-        // After moveElevator completes execution, set the timeout
-        setTimeout(() => {
-            building.releaseElevator(elevatorId);
-            console.log("test");
-        }, 7000);
-    });
+      createFloors();
 
-      function handleBackgroundClick(metalId) {
+      function handleBackgroundClick(metalId, elevatorId) {
         const metal = document.getElementById(metalId);
         metal.classList.remove("linear");
         metal.classList.add("linearGreenBackground");
-        
-        setTimeout(function() {
-            const audio = new Audio('ding.mp3');
-            audio.play();
-            metal.classList.remove("linearGreenBackground");
-            metal.classList.add("linear");
-        }, metalId * 500); 
-    }
+        const elevatorInst = building.getElevatorById(elevatorId);
+        const numberOfFloorsMoved = Math.abs(
+          elevatorInst.getCurrentFloor - elevatorInst.getLastFloor
+        );
 
+        setTimeout(function () {
+          const audio = new Audio("ding.mp3");
+          audio.play();
+          metal.classList.remove("linearGreenBackground");
+          metal.classList.add("linear");
+        }, numberOfFloorsMoved * 500);
+      }
 
       function isElevatorArrived(elevatorId, destinationFloor) {
         const elevatorInst = building.getElevatorById(elevatorId);
-        const elevatorCurrentPosition = (elevatorInst.getCurrentFloor - 1) * setting.HEIGHT + (elevatorInst.getCurrentFloor * 7); // Current position of the elevator
+        const elevatorCurrentPosition =
+          (elevatorInst.getCurrentFloor - 1) * setting.HEIGHT +
+          elevatorInst.getCurrentFloor * 7; // Current position of the elevator
 
-        const destinationFloorPosition = (destinationFloor - 1) * setting.HEIGHT; // Position of the destination floor
+        const destinationFloorPosition =
+          (destinationFloor - 1) * setting.HEIGHT; // Position of the destination floor
 
         // Check if the absolute difference between the current position and destination position is less than a threshold (e.g., 5 pixels)
-        const threshold = 8; 
-        console.log(elevatorCurrentPosition , destinationFloorPosition ,elevatorId, destinationFloor)
-        const isArrived = Math.abs(elevatorCurrentPosition - destinationFloorPosition) < threshold;
+        const threshold = 8;
+        console.log(
+          elevatorCurrentPosition,
+          destinationFloorPosition,
+          elevatorId,
+          destinationFloor
+        );
+        const isArrived =
+          Math.abs(elevatorCurrentPosition - destinationFloorPosition) <
+          threshold;
 
         return isArrived;
-    }
+      }
 
+      function startTimer(durationInSeconds, counterObj) {
 
-     
+            let secondsLeft = (Math.ceil(Math.abs(durationInSeconds) * 0.5) * 6);
+
+            let timerInterval = setInterval(() => {
+                secondsLeft--;
+                counterObj.textContent = secondsLeft; 
+                if (secondsLeft <= 0) {
+                    clearInterval(timerInterval);
+                    counterObj.innerText = " ";
+                }
+            }, 100); 
+
+            
+        }
+
     </script>
   </body>
 </html>

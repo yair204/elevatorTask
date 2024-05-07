@@ -1,9 +1,10 @@
 var Elevator = /** @class */ (function () {
     function Elevator(elevatorId) {
         this.id = elevatorId;
-        this.currentFloor = 0; // Initial position at ground floor
+        this.currentFloor = 1; // Initial position at ground floor
         this.direction = "stationary"; // Initial direction is stationary
         this.destinationQueue = []; // Queue to store destination floors
+        this.lastFloor = 1;
     }
     Object.defineProperty(Elevator.prototype, "getCurrentFloor", {
         // Getter method to retrieve the current floor
@@ -13,21 +14,30 @@ var Elevator = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(Elevator.prototype, "getLastFloor", {
+        get: function () {
+            return this.lastFloor;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Elevator.prototype.move = function (destinationFloor) {
         // Update direction based on the destination floor
         if (destinationFloor > this.currentFloor) {
             this.direction = "up";
-            // setTimeout(() => { this.direction = "stationary"}, 2000);
         }
         else if (destinationFloor < this.currentFloor) {
             this.direction = "down";
-            // setTimeout(() => { this.direction = "stationary"}, 2000);
         }
         else {
             this.direction = "stationary";
         }
         // Update current floor
+        this.lastFloor = this.currentFloor;
         this.currentFloor = destinationFloor;
+        console.log("🚀 ~ Elevator ~ move ~ currentFloor:", this.currentFloor);
+        this.destinationQueue.shift();
+        console.log("🚀 ~ Elevator ~ move ~ lastFloor:", this.lastFloor);
     };
     Elevator.prototype.addToQueue = function (floor) {
         // Add a floor to the destination queue
@@ -90,10 +100,19 @@ var Building = /** @class */ (function () {
         }
     };
     Building.prototype.releaseElevator = function (elevatorId) {
-        var elevator = this.getElevatorById(elevatorId);
-        if (elevator) {
-            elevator.direction = "stationary";
-        }
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                var elevator = _this.getElevatorById(elevatorId);
+                if (elevator) {
+                    elevator.direction = "stationary";
+                    resolve(); // Resolve the promise after releasing elevator
+                }
+                else {
+                    reject("Elevator not found");
+                }
+            }, 4000);
+        });
     };
     return Building;
 }());
