@@ -7,6 +7,8 @@ This project implements an elevator simulation in TypeScript. It consists of mul
 
 ```bash
 tsc elevator.ts
+tsc functions.ts
+tsc interfaces.ts
 ```
 
 ***Run the Simulation:*** Open the ***index.html*** file in your browser to run the elevator simulation.
@@ -15,6 +17,9 @@ tsc elevator.ts
 ***elevator.ts:*** Contains the TypeScript code for the elevator simulation.\
 ***index.html:*** HTML file to display the elevator simulation in the browser.\
 ***style.css:*** CSS file for styling the elevator simulation.\
+***functions.ts:*** Contains the JavaScript code for additional functionality in the 
+elevator simulation.\
+***interfaces.ts:*** Contains the interface for the classes.\
 
 ## Classes
 ***Elevator:*** Represents an elevator with properties and methods for movement and handling requests.\

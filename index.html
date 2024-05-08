@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Elevators</title>
+    <script>var exports = {};</script>
+
     <script src="elevator.js"></script>
     <script src="config.js"></script>
     <script src="functions.js"></script>
@@ -20,7 +22,7 @@
       const NUM_OF_BUILDINGS = setting.NUM_OF_BUILDINGS; 
       const NUM_OF_FLOORS = setting.NUM_OF_FLOORS;
 
-      const master = new BuildingMaster(NUM_OF_BUILDINGS, NUM_OF_ELEVATORS); 
+      const master = new BuildingMaster(NUM_OF_BUILDINGS, NUM_OF_ELEVATORS,NUM_OF_FLOORS); 
       
       
       for (let b = 0; b < NUM_OF_BUILDINGS; b++) {
@@ -29,11 +31,11 @@
           
           // Create elevators container
           const elevatorsContainer = document.createElement("div");
-          createElevators(building,b,elevatorsContainer)
+          createElevators(master,building,b,elevatorsContainer,setting)
           
           // Create floors container
           const floorsContainer = document.createElement("div");
-          createFloors(building,b,floorsContainer); 
+          createFloors(master,building,b,floorsContainer,setting); 
 
           mainContainer.appendChild(elevatorsContainer);
           mainContainer.appendChild(floorsContainer);

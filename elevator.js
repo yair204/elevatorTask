@@ -1,26 +1,19 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var Elevator = /** @class */ (function () {
     function Elevator(elevatorId) {
         this.id = elevatorId;
-        this.currentFloor = 1; // Initial position at ground floor
-        this.direction = "stationary"; // Initial direction is stationary
-        this.destinationQueue = []; // Queue to store destination floors
-        this.lastFloor = 1;
+        this.currentFloor = 1;
+        this.direction = "stationary";
+        this.destinationQueue = [];
     }
-    Object.defineProperty(Elevator.prototype, "getCurrentFloor", {
-        // Getter method to retrieve the current floor
-        get: function () {
-            return this.currentFloor;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Elevator.prototype, "getLastFloor", {
-        get: function () {
-            return this.lastFloor;
-        },
-        enumerable: false,
-        configurable: true
-    });
+    Elevator.prototype.getCurrentFloor = function () {
+        return this.currentFloor;
+    };
+    Elevator.prototype.getLastFloor = function () {
+        return this.lastFloor || 1;
+    };
+    // Method to move the elevator to a destination floor
     Elevator.prototype.move = function (destinationFloor) {
         // Update direction based on the destination floor
         if (destinationFloor > this.currentFloor) {
@@ -38,13 +31,10 @@ var Elevator = /** @class */ (function () {
         this.destinationQueue.shift();
     };
     Elevator.prototype.addToQueue = function (floor) {
-        // Add a floor to the destination queue
         this.destinationQueue.push(floor);
     };
     Elevator.prototype.handleRequest = function (floor) {
-        // Add requested floor to the destination queue
         this.addToQueue(floor);
-        // If elevator is currently stationary, start moving towards the first destination
         if (this.direction === "stationary") {
             this.move(this.destinationQueue[0]);
         }
@@ -56,20 +46,12 @@ var Building = /** @class */ (function () {
         this.idsList = Array.from({ length: numElevators }, function () { return Math.floor(Math.random() * (100 - 1 + 1)) + 1; });
         this.elevators = this.idsList.map(function (id) { return new Elevator(id); });
     }
-    Object.defineProperty(Building.prototype, "numberOfElevators", {
-        get: function () {
-            return this.elevators.length;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Building.prototype, "elevatorsIdsList", {
-        get: function () {
-            return this.idsList;
-        },
-        enumerable: false,
-        configurable: true
-    });
+    Building.prototype.numberOfElevators = function () {
+        return this.elevators.length;
+    };
+    Building.prototype.elevatorsIdsList = function () {
+        return this.idsList;
+    };
     Building.prototype.getElevatorById = function (elevatorId) {
         var elevator = this.elevators.find(function (elevator) { return elevator.id === elevatorId; });
         return elevator ? elevator : null;
@@ -115,18 +97,15 @@ var Building = /** @class */ (function () {
     return Building;
 }());
 var BuildingMaster = /** @class */ (function () {
-    function BuildingMaster(numBuildings, numElevatorsPerBuilding) {
+    function BuildingMaster(numBuildings, numElevatorsPerBuilding, numOfFloors) {
         this.buildings = Array.from({ length: numBuildings }, function () { return new Building(numElevatorsPerBuilding); });
+        this.numOfFloors = numOfFloors;
     }
-    Object.defineProperty(BuildingMaster.prototype, "numberOfBuildings", {
-        get: function () {
-            return this.buildings.length;
-        },
-        enumerable: false,
-        configurable: true
-    });
+    BuildingMaster.prototype.numberOfBuildings = function () {
+        return this.buildings.length;
+    };
     BuildingMaster.prototype.callElevator = function (buildingIndex, floor) {
-        if (buildingIndex >= 0 && buildingIndex < this.buildings.length) {
+        if (buildingIndex >= 0 && buildingIndex < this.buildings.length && floor <= this.numOfFloors) {
             return this.buildings[buildingIndex].callElevator(floor);
         }
         else {

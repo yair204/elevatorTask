@@ -1,4 +1,7 @@
-class Elevator {
+
+
+import {BuildingMasterInterface ,BuildingInterface ,ElevatorInterface} from './interfaces'
+class Elevator implements ElevatorInterface {
     id: number;
     currentFloor: number;
     direction: string;
@@ -7,21 +10,20 @@ class Elevator {
 
     constructor(elevatorId: number) {
         this.id = elevatorId;
-        this.currentFloor = 1; // Initial position at ground floor
-        this.direction = "stationary"; // Initial direction is stationary
-        this.destinationQueue = []; // Queue to store destination floors
-        this.lastFloor = 1;
+        this.currentFloor = 1; 
+        this.direction = "stationary"; 
+        this.destinationQueue = []; 
     }
 
-    // Getter method to retrieve the current floor
-    get getCurrentFloor() {
+    getCurrentFloor(): number {
         return this.currentFloor;
     }
 
-    get getLastFloor() {
-        return this.lastFloor;
+    getLastFloor(): number {
+        return this.lastFloor || 1; 
     }
 
+    // Method to move the elevator to a destination floor
     move(destinationFloor: number): void {
         // Update direction based on the destination floor
         if (destinationFloor > this.currentFloor) {
@@ -35,27 +37,23 @@ class Elevator {
         // Update current floor
         this.lastFloor = this.currentFloor;
         this.currentFloor = destinationFloor;
-        this.destinationQueue.shift();
-        
+        this.destinationQueue.shift(); 
     }
 
     addToQueue(floor: number): void {
-        // Add a floor to the destination queue
         this.destinationQueue.push(floor);
     }
 
     handleRequest(floor: number): void {
-        // Add requested floor to the destination queue
         this.addToQueue(floor);
 
-        // If elevator is currently stationary, start moving towards the first destination
         if (this.direction === "stationary") {
             this.move(this.destinationQueue[0]);
         }
     }
 }
 
-class Building {
+ class Building implements BuildingInterface {
     elevators: Elevator[];
     idsList:number[];
 
@@ -64,11 +62,11 @@ class Building {
         this.elevators = this.idsList.map(id => new Elevator(id));
     }
 
-    get numberOfElevators(): number {
+    numberOfElevators(): number {
         return this.elevators.length;
     }
 
-    get elevatorsIdsList(): Array<number>{
+    elevatorsIdsList(): Array<number>{
         return this.idsList;
     }
 
@@ -121,19 +119,21 @@ class Building {
    
 }
 
-class BuildingMaster {
+ class BuildingMaster implements BuildingMasterInterface{
     buildings: Building[];
+    numOfFloors: number;
 
-    constructor(numBuildings: number, numElevatorsPerBuilding: number) {
+    constructor(numBuildings: number, numElevatorsPerBuilding: number,numOfFloors: number) {
         this.buildings = Array.from({ length: numBuildings }, () => new Building(numElevatorsPerBuilding));
+        this.numOfFloors = numOfFloors;
     }
 
-    get numberOfBuildings(): number {
+    numberOfBuildings(): number {
         return this.buildings.length;
     }
 
     callElevator(buildingIndex: number, floor: number): number {
-        if (buildingIndex >= 0 && buildingIndex < this.buildings.length) {
+        if (buildingIndex >= 0 && buildingIndex < this.buildings.length && floor <= this.numOfFloors ) {
             return this.buildings[buildingIndex].callElevator(floor);
         } else {
             console.log("Building index out of range.");
