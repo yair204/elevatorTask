@@ -53,13 +53,19 @@ class Elevator implements ElevatorInterface {
     }
 }
 
+class ElevatorFactory {
+    static createElevator(elevatorId: number): Elevator {
+        return new Elevator(elevatorId);
+    }
+}
+
  class Building implements BuildingInterface {
     elevators: Elevator[];
     idsList:number[];
 
     constructor(numElevators: number) {
         this.idsList = Array.from({ length: numElevators }, () => Math.floor(Math.random() * (100 - 1 + 1)) + 1);
-        this.elevators = this.idsList.map(id => new Elevator(id));
+        this.elevators = this.idsList.map(id => ElevatorFactory.createElevator(id));
     }
 
     numberOfElevators(): number {
@@ -151,3 +157,8 @@ class Elevator implements ElevatorInterface {
     }
 }
 
+class BuildingMasterFactory {
+    static createBuildingMaster(numBuildings: number, numElevatorsPerBuilding: number, numOfFloors: number): BuildingMaster {
+        return new BuildingMaster(numBuildings, numElevatorsPerBuilding, numOfFloors);
+    }
+}

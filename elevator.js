@@ -41,10 +41,18 @@ var Elevator = /** @class */ (function () {
     };
     return Elevator;
 }());
+var ElevatorFactory = /** @class */ (function () {
+    function ElevatorFactory() {
+    }
+    ElevatorFactory.createElevator = function (elevatorId) {
+        return new Elevator(elevatorId);
+    };
+    return ElevatorFactory;
+}());
 var Building = /** @class */ (function () {
     function Building(numElevators) {
         this.idsList = Array.from({ length: numElevators }, function () { return Math.floor(Math.random() * (100 - 1 + 1)) + 1; });
-        this.elevators = this.idsList.map(function (id) { return new Elevator(id); });
+        this.elevators = this.idsList.map(function (id) { return ElevatorFactory.createElevator(id); });
     }
     Building.prototype.numberOfElevators = function () {
         return this.elevators.length;
@@ -123,4 +131,12 @@ var BuildingMaster = /** @class */ (function () {
         }
     };
     return BuildingMaster;
+}());
+var BuildingMasterFactory = /** @class */ (function () {
+    function BuildingMasterFactory() {
+    }
+    BuildingMasterFactory.createBuildingMaster = function (numBuildings, numElevatorsPerBuilding, numOfFloors) {
+        return new BuildingMaster(numBuildings, numElevatorsPerBuilding, numOfFloors);
+    };
+    return BuildingMasterFactory;
 }());

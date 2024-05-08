@@ -22,20 +22,20 @@
       const NUM_OF_BUILDINGS = setting.NUM_OF_BUILDINGS; 
       const NUM_OF_FLOORS = setting.NUM_OF_FLOORS;
 
-      const master = new BuildingMaster(NUM_OF_BUILDINGS, NUM_OF_ELEVATORS,NUM_OF_FLOORS); 
+      const buildingMaster = BuildingMasterFactory.createBuildingMaster(NUM_OF_BUILDINGS, NUM_OF_ELEVATORS,NUM_OF_FLOORS); 
       
       
       for (let b = 0; b < NUM_OF_BUILDINGS; b++) {
-          const building = master.buildings[b];
+          const building = buildingMaster.buildings[b];
           const mainContainer = document.getElementById("mainContainerId");
           
           // Create elevators container
           const elevatorsContainer = document.createElement("div");
-          createElevators(master,building,b,elevatorsContainer,setting)
+          createElevators(buildingMaster,building,b,elevatorsContainer,setting)
           
           // Create floors container
           const floorsContainer = document.createElement("div");
-          createFloors(master,building,b,floorsContainer,setting); 
+          createFloors(buildingMaster,building,b,floorsContainer,setting); 
 
           mainContainer.appendChild(elevatorsContainer);
           mainContainer.appendChild(floorsContainer);
