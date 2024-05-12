@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-function createElevators(master, building, b, elevatorsContainer, setting) {
+function createElevators(building, b, elevatorsContainer, setting) {
     elevatorsContainer.id = "elevators".concat(b + 1);
     elevatorsContainer.classList.add("elevators");
     // Loop to create elevator images for the building
@@ -65,17 +65,15 @@ function createFloors(master, building, buildingIndex, floors, setting) {
 function moveElevator(master, building, buildingIndex, elevatorId, setting) {
     var elevatorImg = document.getElementById(elevatorId.toString());
     var elevatorInst = building.getElevatorById(elevatorId);
-    if (elevatorInst) {
+    if (elevatorInst && elevatorImg) {
         var newPosition = (elevatorInst.getCurrentFloor() - 1) * setting.HEIGHT +
             elevatorInst.getCurrentFloor() * 7 +
             "px";
-        if (elevatorImg) {
-            elevatorImg.style.marginBottom = newPosition;
-            if (elevatorInst.getLastFloor()) {
-                elevatorImg.style.setProperty("--transition-duration", Math.abs(elevatorInst.getCurrentFloor() - elevatorInst.getLastFloor()) *
-                    0.5 +
-                    "s");
-            }
+        elevatorImg.style.marginBottom = newPosition;
+        if (elevatorInst.getLastFloor()) {
+            elevatorImg.style.setProperty("--transition-duration", Math.abs(elevatorInst.getCurrentFloor() - elevatorInst.getLastFloor()) *
+                0.5 +
+                "s");
         }
         // Call releaseElevator asynchronously without waiting for it to finish
         master

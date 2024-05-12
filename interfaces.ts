@@ -15,6 +15,7 @@ interface ElevatorInterface {
 interface BuildingInterface {
     elevators: ElevatorInterface[];
     idsList: number[];
+    buildingIndex: number;
 
     numberOfElevators(): number;
     elevatorsIdsList(): number[];

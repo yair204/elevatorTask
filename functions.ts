@@ -1,7 +1,7 @@
 
 import { BuildingMasterInterface, BuildingInterface, ElevatorInterface, Setting } from './interfaces'
 
-function createElevators(master: BuildingMasterInterface, building: BuildingInterface, b: number, elevatorsContainer: HTMLElement, setting: Setting): void {
+function createElevators( building: BuildingInterface, b: number, elevatorsContainer: HTMLElement, setting: Setting): void {
     elevatorsContainer.id = `elevators${b + 1}`;
     elevatorsContainer.classList.add("elevators");
 
@@ -72,23 +72,20 @@ function createFloors(master: BuildingMasterInterface, building: BuildingInterfa
 function moveElevator(master: BuildingMasterInterface, building: BuildingInterface, buildingIndex: number, elevatorId: number, setting: Setting): void {
     const elevatorImg = document.getElementById(elevatorId.toString());
     const elevatorInst = building.getElevatorById(elevatorId) as ElevatorInterface;
-    if (elevatorInst) {
+    if (elevatorInst && elevatorImg) {
         const newPosition = (elevatorInst.getCurrentFloor() - 1) * setting.HEIGHT +
             elevatorInst.getCurrentFloor() * 7 +
             "px";
-        if (elevatorImg) {
-            elevatorImg.style.marginBottom = newPosition;
+        elevatorImg.style.marginBottom = newPosition;
 
-            if (elevatorInst.getLastFloor()) {
-                elevatorImg.style.setProperty(
-                    "--transition-duration",
-                    Math.abs(elevatorInst.getCurrentFloor() - elevatorInst.getLastFloor()) *
-                    0.5 +
-                    "s"
-                );
-            }
-        }
-
+        if (elevatorInst.getLastFloor()) {
+            elevatorImg.style.setProperty(
+                "--transition-duration",
+                Math.abs(elevatorInst.getCurrentFloor() - elevatorInst.getLastFloor()) *
+                0.5 +
+                "s"
+            );
+        }   
         // Call releaseElevator asynchronously without waiting for it to finish
         master
             .releaseElevator(buildingIndex, elevatorId)
@@ -124,7 +121,6 @@ function handleBackgroundClick(building: BuildingInterface, metalId: string, ele
 
 function startTimer(durationInSeconds: number, counterObj: HTMLElement): void {
     let secondsLeft = (Math.ceil(Math.abs(durationInSeconds) * 0.5) * 6);
-
     let timerInterval = setInterval(() => {
         secondsLeft--;
         if (counterObj) {

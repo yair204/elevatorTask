@@ -29,4 +29,9 @@ elevator simulation.\
 ***config.ts:*** Contains configuration settings such as the number of elevators, buildings, and floors.
 Dependencies\.
 
+## Uml Diagram
+```bash
+https://drive.google.com/file/d/1ejnNPNB49nJFo9Bz8tg36v_GDzqpm1z0/view?usp=drive_link
+```
+
 No external dependencies required.

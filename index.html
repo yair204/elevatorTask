@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Elevators</title>
-    <script>var exports = {};</script>
+    <script>let exports = {};</script>
 
     <script src="elevator.js"></script>
     <script src="config.js"></script>
@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div id="noElevators"></div>
+    <div id="noElevators" style="height: 25px;"></div>
 
     <div class="mainContainer" id="mainContainerId">
        
@@ -31,7 +31,7 @@
           
           // Create elevators container
           const elevatorsContainer = document.createElement("div");
-          createElevators(buildingMaster,building,b,elevatorsContainer,setting)
+          createElevators(building,b,elevatorsContainer,setting)
           
           // Create floors container
           const floorsContainer = document.createElement("div");
